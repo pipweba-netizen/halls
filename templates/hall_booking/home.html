@@ -1,0 +1,794 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}الرئيسية - نظام حجز القاعات{% endblock %}
+
+{% block content %}
+<!-- Modern Hero Section -->
+<section class="hero-section">
+    <div class="hero-background">
+        <div class="hero-overlay"></div>
+        <div class="hero-particles"></div>
+    </div>
+    <div class="container">
+        <div class="row align-items-center min-vh-100">
+            <div class="col-lg-6">
+                <div class="hero-content">
+                    <h1 class="hero-title">
+                        <span class="gradient-text">احجز قاعتك</span>
+                        <br>بسهولة وأمان
+                    </h1>
+                    <p class="hero-subtitle">نظام متطور لحجز القاعات والمؤتمرات والمناسبات. اختر من مجموعة واسعة من القاعات المميزة مع أحدث التقنيات.</p>
+                    <div class="hero-buttons">
+                        <a href="{% url 'hall_booking:halls_list' %}" class="btn btn-primary btn-lg hero-btn">
+                            <i class="fas fa-search me-2"></i>استعرض القاعات
+                        </a>
+                        <a href="{% url 'hall_booking:contact' %}" class="btn btn-outline-light btn-lg hero-btn">
+                            <i class="fas fa-envelope me-2"></i>تواصل معنا
+                        </a>
+                    </div>
+                    <div class="hero-stats">
+                        <div class="stat-item">
+                            <span class="stat-number">{{ total_halls|default:"100" }}+</span>
+                            <span class="stat-label">قاعة متاحة</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">{{ total_bookings|default:"500" }}+</span>
+                            <span class="stat-label">حجز مكتمل</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">24/7</span>
+                            <span class="stat-label">دعم متواصل</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="hero-visual">
+                    <div class="floating-card card-1">
+                        <i class="fas fa-building"></i>
+                        <span>قاعات فاخرة</span>
+                    </div>
+                    <div class="floating-card card-2">
+                        <i class="fas fa-calendar-check"></i>
+                        <span>حجز فوري</span>
+                    </div>
+                    <div class="floating-card card-3">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>حماية كاملة</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Modern Features Section -->
+<section class="features-section">
+    <div class="container">
+        <div class="section-header text-center">
+            <h2 class="section-title">لماذا تختار نظامنا؟</h2>
+            <p class="section-subtitle">نقدم أفضل الخدمات وأكثرها موثوقية مع أحدث التقنيات</p>
+        </div>
+        <div class="row">
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-rocket"></i>
+                    </div>
+                    <h3 class="feature-title">حجز سريع</h3>
+                    <p class="feature-description">احجز قاعتك في دقائق معدودة مع واجهة سهلة وبسيطة ومتطورة</p>
+                    <div class="feature-badge">سرعة</div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3 class="feature-title">آمن وموثوق</h3>
+                    <p class="feature-description">نظام آمن يحمي بياناتك ويضمن خصوصية معلوماتك بأحدث تقنيات التشفير</p>
+                    <div class="feature-badge">أمان</div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-headset"></i>
+                    </div>
+                    <h3 class="feature-title">دعم 24/7</h3>
+                    <p class="feature-description">فريق دعم متاح على مدار الساعة لمساعدتك وحل جميع استفساراتك</p>
+                    <div class="feature-badge">دعم</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Modern Categories Section -->
+{% if categories %}
+<section class="categories-section">
+    <div class="container">
+        <div class="section-header text-center">
+            <h2 class="section-title">فئات القاعات</h2>
+            <p class="section-subtitle">اختر من مجموعة متنوعة من القاعات المميزة</p>
+        </div>
+        <div class="row">
+            {% for category in categories %}
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="category-card">
+                    <div class="category-icon">
+                        <i class="{{ category.icon }}"></i>
+                    </div>
+                    <h3 class="category-title">{{ category.name }}</h3>
+                    <p class="category-description">{{ category.description }}</p>
+                    <a href="{% url 'hall_booking:halls_list' %}?category={{ category.id }}" class="category-link">
+                        استعرض القاعات
+                        <i class="fas fa-arrow-left"></i>
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Modern Featured Halls Section -->
+{% if featured_halls %}
+<section class="halls-section">
+    <div class="container">
+        <div class="section-header text-center">
+            <h2 class="section-title">القاعات المميزة</h2>
+            <p class="section-subtitle">أفضل القاعات المتاحة للحجز</p>
+        </div>
+        <div class="row">
+            {% for hall in featured_halls %}
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="hall-card">
+                    <div class="hall-image">
+                        {% if hall.image %}
+                        <img src="{{ hall.image.url }}" alt="{{ hall.name }}">
+                        {% else %}
+                        <div class="hall-placeholder">
+                            <i class="fas fa-building"></i>
+                        </div>
+                        {% endif %}
+                        <div class="hall-overlay">
+                            <a href="{% url 'hall_booking:hall_detail' hall.id %}" class="btn btn-light">
+                                <i class="fas fa-eye me-2"></i>عرض التفاصيل
+                            </a>
+                        </div>
+                    </div>
+                    <div class="hall-content">
+                        <h3 class="hall-title">{{ hall.name }}</h3>
+                        <p class="hall-description">{{ hall.description|truncatewords:15 }}</p>
+                        <div class="hall-meta">
+                            <span class="hall-category">{{ hall.category.name }}</span>
+                            <span class="hall-price">{{ hall.price_per_hour }} ريال/ساعة</span>
+                        </div>
+                        <div class="hall-features">
+                            {% if hall.capacity %}
+                            <span class="feature-tag">
+                                <i class="fas fa-users me-1"></i>{{ hall.capacity }} شخص
+                            </span>
+                            {% endif %}
+                            {% if hall.features %}
+                            <span class="feature-tag">
+                                <i class="fas fa-star me-1"></i>مميزات متقدمة
+                            </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="text-center mt-5">
+            <a href="{% url 'hall_booking:halls_list' %}" class="btn btn-primary btn-lg">
+                <i class="fas fa-list me-2"></i>عرض جميع القاعات
+            </a>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Modern CTA Section -->
+<section class="cta-section">
+    <div class="container">
+        <div class="cta-content text-center">
+            <h2 class="cta-title">جاهز لحجز قاعتك؟</h2>
+            <p class="cta-subtitle">ابدأ الآن واحصل على أفضل القاعات بأسعار منافسة</p>
+            <div class="cta-buttons">
+                <a href="{% url 'hall_booking:halls_list' %}" class="btn btn-light btn-lg">
+                    <i class="fas fa-calendar-check me-2"></i>احجز الآن
+                </a>
+                <a href="{% url 'hall_booking:contact' %}" class="btn btn-outline-light btn-lg">
+                    <i class="fas fa-phone me-2"></i>تواصل معنا
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+/* لا تعرّف :root هنا، استخدم فقط متغيرات الثيم */
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    color: var(--dark-color);
+    overflow-x: hidden;
+}
+
+/* Hero Section */
+.hero-section {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    background: var(--gradient-primary);
+    overflow: hidden;
+}
+
+.hero-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--gradient-primary);
+}
+
+.hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="1" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+    opacity: 0.3;
+}
+
+.hero-particles {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(120, 119, 198, 0.2) 0%, transparent 50%);
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+    color: white;
+}
+
+.hero-title {
+    font-size: 3.5rem;
+    font-weight: 800;
+    margin-bottom: 1.5rem;
+    line-height: 1.2;
+}
+
+.gradient-text {
+    background: linear-gradient(135deg, #fff 0%, #f0f0f0 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.hero-subtitle {
+    font-size: 1.25rem;
+    margin-bottom: 2rem;
+    opacity: 0.9;
+    line-height: 1.6;
+}
+
+.hero-buttons {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 3rem;
+    flex-wrap: wrap;
+}
+
+.hero-btn {
+    padding: 1rem 2rem;
+    border-radius: 50px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: var(--transition);
+    border: 2px solid transparent;
+}
+
+.hero-btn.btn-primary {
+    background: var(--gradient-primary);
+    color: #fff;
+}
+
+.hero-btn.btn-primary:hover {
+    background: var(--gradient-secondary);
+}
+
+.hero-btn.btn-outline-light {
+    background: transparent;
+    color: #fff;
+    border: 2px solid #fff;
+}
+
+.hero-btn.btn-outline-light:hover {
+    background: rgba(255,255,255,0.12);
+    color: #ffe066;
+}
+
+.hero-stats {
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-number {
+    display: block;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--accent-color);
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    opacity: 0.8;
+}
+
+/* Hero Visual */
+.hero-visual {
+    position: relative;
+    height: 500px;
+}
+
+.floating-card {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    padding: 1.5rem;
+    color: white;
+    text-align: center;
+    animation: float 6s ease-in-out infinite;
+    box-shadow: var(--shadow-light);
+}
+
+.floating-card i {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.floating-card span {
+    font-weight: 600;
+}
+
+.card-1 {
+    top: 20%;
+    left: 10%;
+    animation-delay: 0s;
+}
+
+.card-2 {
+    top: 50%;
+    right: 20%;
+    animation-delay: 2s;
+}
+
+.card-3 {
+    bottom: 20%;
+    left: 30%;
+    animation-delay: 4s;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+}
+
+/* Section Styles */
+.section-header {
+    margin-bottom: 4rem;
+}
+
+.section-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.section-subtitle {
+    font-size: 1.1rem;
+    color: #666;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* Features Section */
+.features-section {
+    padding: 6rem 0;
+    background: var(--light-color);
+}
+
+.feature-card {
+    background: #fff;
+    border-radius: var(--border-radius);
+    padding: 2.5rem;
+    text-align: center;
+    box-shadow: var(--shadow-light);
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+}
+
+.feature-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--gradient-primary);
+}
+
+.feature-card:hover {
+    transform: translateY(-10px);
+    box-shadow: var(--shadow-medium);
+}
+
+.feature-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: var(--gradient-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    color: white;
+    font-size: 2rem;
+}
+
+.feature-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: var(--dark-color);
+}
+
+.feature-description {
+    color: #666;
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+}
+
+.feature-badge {
+    background: var(--gradient-success);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    display: inline-block;
+}
+
+/* Categories Section */
+.categories-section {
+    padding: 6rem 0;
+}
+
+.category-card {
+    background: #fff;
+    border-radius: var(--border-radius);
+    padding: 2.5rem;
+    text-align: center;
+    box-shadow: var(--shadow-light);
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+}
+
+.category-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--gradient-primary);
+    opacity: 0;
+    transition: var(--transition);
+    z-index: 1;
+}
+
+.category-card:hover::before {
+    opacity: 0.05;
+}
+
+.category-card:hover {
+    transform: translateY(-10px);
+    box-shadow: var(--shadow-medium);
+}
+
+.category-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: var(--gradient-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    color: white;
+    font-size: 2rem;
+    position: relative;
+    z-index: 2;
+}
+
+.category-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: var(--dark-color);
+    position: relative;
+    z-index: 2;
+}
+
+.category-description {
+    color: #666;
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+    position: relative;
+    z-index: 2;
+}
+
+.category-link {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: var(--transition);
+    position: relative;
+    z-index: 2;
+}
+
+.category-link:hover {
+    color: var(--secondary-color);
+    transform: translateX(-5px);
+}
+
+/* Halls Section */
+.halls-section {
+    padding: 6rem 0;
+    background: var(--light-color);
+}
+
+.hall-card {
+    background: #fff;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    box-shadow: var(--shadow-light);
+    transition: var(--transition);
+}
+
+.hall-card:hover {
+    transform: translateY(-10px);
+    box-shadow: var(--shadow-medium);
+}
+
+.hall-image {
+    position: relative;
+    height: 250px;
+    overflow: hidden;
+}
+
+.hall-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: var(--transition);
+}
+
+.hall-placeholder {
+    width: 100%;
+    height: 100%;
+    background: var(--gradient-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 3rem;
+}
+
+.hall-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: var(--transition);
+}
+
+.hall-card:hover .hall-overlay {
+    opacity: 1;
+}
+
+.hall-card:hover .hall-image img {
+    transform: scale(1.1);
+}
+
+.hall-content {
+    padding: 1.5rem;
+}
+
+.hall-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--dark-color);
+}
+
+.hall-description {
+    color: #666;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+}
+
+.hall-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.hall-category {
+    background: var(--gradient-primary);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.hall-price {
+    color: var(--success-color);
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+.hall-features {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.feature-tag {
+    background: rgba(102, 126, 234, 0.1);
+    color: var(--primary-color);
+    padding: 0.25rem 0.5rem;
+    border-radius: 10px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+/* CTA Section */
+.cta-section {
+    padding: 6rem 0;
+    background: var(--gradient-primary);
+    position: relative;
+    overflow: hidden;
+}
+
+.cta-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="1" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+    opacity: 0.3;
+}
+
+.cta-content {
+    position: relative;
+    z-index: 2;
+    color: white;
+}
+
+.cta-title {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.cta-subtitle {
+    font-size: 1.25rem;
+    margin-bottom: 2rem;
+    opacity: 0.9;
+}
+
+.cta-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .hero-title {
+        font-size: 2.5rem;
+    }
+    
+    .hero-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .hero-stats {
+        justify-content: center;
+    }
+    
+    .floating-card {
+        display: none;
+    }
+    
+    .section-title {
+        font-size: 2rem;
+    }
+    
+    .cta-title {
+        font-size: 2rem;
+    }
+    
+    .cta-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+}
+
+@media (max-width: 576px) {
+    .hero-title {
+        font-size: 2rem;
+    }
+    
+    .hero-subtitle {
+        font-size: 1rem;
+    }
+    
+    .section-title {
+        font-size: 1.75rem;
+    }
+    
+    .cta-title {
+        font-size: 1.75rem;
+    }
+}
+</style>
+{% endblock %} 

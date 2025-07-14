@@ -1,0 +1,369 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}نظام حجز القاعات{% endblock %}</title>
+    
+    <!-- Bootstrap RTL CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        :root {
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+            --accent-color: #f093fb;
+            --success-color: #4facfe;
+            --warning-color: #43e97b;
+            --danger-color: #fa709a;
+            --dark-color: #2d3748;
+            --light-color: #f7fafc;
+            --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-secondary: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --gradient-success: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --gradient-warning: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            --shadow-light: 0 10px 30px rgba(0,0,0,0.1);
+            --shadow-medium: 0 20px 40px rgba(0,0,0,0.15);
+            --shadow-heavy: 0 30px 60px rgba(0,0,0,0.2);
+            --border-radius: 20px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        /* شريط علوي زجاجي متدرج وشفاف متناسق مع الهيرو */
+        .glass-navbar {
+            background: linear-gradient(135deg, #667eea99 0%, #764ba299 100%) !important;
+            backdrop-filter: blur(12px) saturate(120%);
+            -webkit-backdrop-filter: blur(12px) saturate(120%);
+            border-radius: 0;
+            box-shadow: 0 4px 24px rgba(102,126,234,0.10), 0 1.5px 0 rgba(0,0,0,0.03);
+            border-bottom: 1.5px solid #fff2;
+            transition: background 0.5s, box-shadow 0.3s;
+        }
+        .animated-navbar {
+            background: transparent !important;
+            box-shadow: none;
+        }
+        /* شريط علوي بتدرج لوني متحرك */
+        .animated-navbar {
+            background: linear-gradient(270deg, #0d6efd, #6610f2, #20c997, #0d6efd);
+            background-size: 800% 800%;
+            animation: gradientBG 12s ease infinite;
+            box-shadow: 0 4px 24px rgba(13,110,253,0.10), 0 1.5px 0 rgba(0,0,0,0.03);
+            border-radius: 0 0 24px 24px;
+            transition: box-shadow 0.3s;
+        }
+        @keyframes gradientBG {
+            0% {background-position:0% 50%}
+            50% {background-position:100% 50%}
+            100% {background-position:0% 50%}
+        }
+        /* تحريك ظهور الشريط */
+        .animated-navbar {
+            opacity: 0;
+            transform: translateY(-40px) scale(0.98);
+            animation: navbarFadeIn 1.2s cubic-bezier(.77,0,.18,1) 0.2s forwards, gradientBG 12s ease infinite;
+        }
+        @keyframes navbarFadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        /* تأثيرات الروابط */
+        .navbar .nav-link, .navbar .btn {
+            transition: color 0.2s, background 0.2s, box-shadow 0.2s, transform 0.2s;
+        }
+        .navbar .nav-link:hover, .navbar .btn:hover {
+            color: #fff !important;
+            background: rgba(255,255,255,0.10) !important;
+            box-shadow: 0 2px 12px rgba(32,201,151,0.10);
+            transform: translateY(-2px) scale(1.06);
+        }
+        .navbar .dropdown-menu {
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(13,110,253,0.10);
+            animation: dropdownFadeIn 0.5s cubic-bezier(.77,0,.18,1);
+        }
+        @keyframes dropdownFadeIn {
+            from { opacity: 0; transform: translateY(-10px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .navbar .dropdown-toggle img {
+            border: 2px solid #fff;
+            transition: box-shadow 0.2s;
+            object-fit: cover;
+            width: 32px;
+            height: 32px;
+            aspect-ratio: 1/1;
+            background: #eee;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+        }
+        .navbar .dropdown-toggle img:hover {
+            box-shadow: 0 0 0 3px #20c99744;
+        }
+        .avatar-navbar {
+            display: inline-block;
+            vertical-align: middle;
+        }
+        /* تحسين زر تسجيل الخروج */
+        .dropdown-menu .dropdown-item.text-danger:hover {
+            background: #ffdddd;
+            color: #dc3545;
+        }
+        /* تحسينات عامة */
+        .navbar .navbar-brand {
+            font-weight: bold;
+            font-size: 1.35rem;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .sticky-top {
+            position: sticky;
+            top: 0;
+            z-index: 1030;
+        }
+        /* حركة أيقونات الشريط العلوي */
+        .navbar .nav-link i, .navbar .navbar-brand i {
+            transition: transform 0.4s cubic-bezier(.77,0,.18,1), color 0.3s;
+        }
+        .navbar .nav-link:hover i, .navbar .navbar-brand:hover i {
+            animation: icon-bounce 0.7s;
+            color: #20c997;
+        }
+        @keyframes icon-bounce {
+            0%   { transform: scale(1) translateY(0); }
+            20%  { transform: scale(1.2,0.8) translateY(-4px); }
+            40%  { transform: scale(0.95,1.1) translateY(-8px); }
+            60%  { transform: scale(1.1,0.9) translateY(-4px); }
+            80%  { transform: scale(0.98,1.02) translateY(0); }
+            100% { transform: scale(1) translateY(0); }
+        }
+        .glass-navbar, .glass-navbar .navbar-nav .nav-link, .glass-navbar .navbar-brand, .glass-navbar .btn, .glass-navbar .dropdown-toggle, .glass-navbar .dropdown-menu, .glass-navbar .dropdown-item {
+            color: #fff !important;
+            text-shadow: 0 1px 8px rgba(60,60,60,0.18);
+        }
+        .glass-navbar .nav-link.active, .glass-navbar .nav-link:focus, .glass-navbar .nav-link:hover,
+        .glass-navbar .btn:focus, .glass-navbar .btn:hover {
+            color: #ffe066 !important;
+            background: rgba(255,255,255,0.10) !important;
+            text-shadow: 0 2px 12px rgba(0,0,0,0.18);
+        }
+        .glass-navbar .dropdown-menu {
+            background: rgba(40,40,60,0.95);
+            color: #fff;
+        }
+        .glass-navbar .dropdown-item:hover, .glass-navbar .dropdown-item:focus {
+            color: #ffe066 !important;
+            background: rgba(255,255,255,0.10) !important;
+        }
+        .glass-navbar .dropdown-item.text-danger:hover {
+            color: #dc3545 !important;
+            background: #ffdddd !important;
+        }
+        .glass-navbar .dropdown-toggle img {
+            border: 2px solid #fff;
+        }
+        /* حركة أيقونات الثيم */
+        .theme-icon {
+            transition: transform 0.5s cubic-bezier(.77,0,.18,1), color 0.3s;
+            font-size: 1.2em;
+        }
+        .dropdown-item:hover .theme-icon {
+            transform: rotate(-18deg) scale(1.25);
+            color: #ffe066;
+        }
+        .navbar, .glass-navbar, .animated-navbar, .sticky-top {
+            background: var(--gradient-primary) !important;
+            box-shadow: 0 4px 24px rgba(13,110,253,0.10), 0 1.5px 0 rgba(0,0,0,0.03);
+            border-radius: 0 0 24px 24px;
+            transition: box-shadow 0.3s, background 0.3s;
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+        }
+        .navbar, .glass-navbar, .animated-navbar, .sticky-top {
+            z-index: 1050;
+        }
+        .navbar, .glass-navbar, .animated-navbar, .sticky-top {
+            border-radius: 0 !important;
+        }
+    </style>
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark animated-navbar shadow-lg sticky-top glass-navbar">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'hall_booking:home' %}">
+                <i class="fas fa-building me-2"></i>
+                نظام حجز القاعات
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'hall_booking:home' %}">
+                            <i class="fas fa-home me-1"></i>الرئيسية
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'hall_booking:halls_list' %}">
+                            <i class="fas fa-list me-1"></i>القاعات
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'hall_booking:about' %}">
+                            <i class="fas fa-info-circle me-1"></i>من نحن
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'hall_booking:contact' %}">
+                            <i class="fas fa-envelope me-1"></i>تواصل معنا
+                        </a>
+                    </li>
+                </ul>
+                
+                <ul class="navbar-nav">
+                    {% if user.is_authenticated %}
+                        {% if user.is_staff %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'hall_booking:dashboard' %}">
+                                <i class="fas fa-tachometer-alt me-1"></i>لوحة الإدارة
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'admin:index' %}">
+                                <i class="fas fa-cog me-1"></i>الإدارة
+                            </a>
+                        </li>
+                        {% endif %}
+                        <!-- قائمة منسدلة للمستخدم المسجل -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <img src="{% if user.profile.avatar %}{{ user.profile.avatar.url }}{% else %}https://ui-avatars.com/api/?name={{ user.get_full_name|default:user.username }}&background=0D6EFD&color=fff&size=128&rounded=true{% endif %}" class="rounded-circle me-2 avatar-navbar" width="32" height="32" alt="Avatar">
+                                <span>{{ user.get_full_name|default:user.username }}</span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end text-end" aria-labelledby="userDropdown">
+                                <li><a class="dropdown-item" href="/profile"><i class="fas fa-id-badge me-1"></i>الملف الشخصي</a></li>
+                                <li><a class="dropdown-item" href="/change-password"><i class="fas fa-key me-1"></i>تغيير كلمة المرور</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" href="/logout"><i class="fas fa-sign-out-alt me-1"></i>تسجيل الخروج</a></li>
+                            </ul>
+                        </li>
+                        <!-- زر تبديل الثيم -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="themeDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" title="تغيير الثيم">
+                                <i class="fas fa-palette me-1"></i>
+                                <span class="d-none d-lg-inline">الثيم</span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end text-end" aria-labelledby="themeDropdown">
+                                <li><a class="dropdown-item theme-select" href="#" data-theme="default"><i class="fas fa-sun theme-icon me-2"></i>الثيم الافتراضي</a></li>
+                                <li><a class="dropdown-item theme-select" href="#" data-theme="candy"><i class="fas fa-ice-cream theme-icon me-2"></i>ثيم الحلوى</a></li>
+                                <li><a class="dropdown-item theme-select" href="#" data-theme="galaxy"><i class="fas fa-meteor theme-icon me-2"></i>ثيم المجرة</a></li>
+                                <li><a class="dropdown-item theme-select" href="#" data-theme="dark"><i class="fas fa-moon theme-icon me-2"></i>ثيم الظلام</a></li>
+                                <li><a class="dropdown-item theme-select" href="#" data-theme="innovation"><i class="fas fa-lightbulb theme-icon me-2"></i>ثيم الابتكار</a></li>
+                                <li><a class="dropdown-item theme-select" href="#" data-theme="gourmet"><i class="fas fa-utensils theme-icon me-2"></i>ثيم قورميزى</a></li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="nav-item me-2">
+                            <a class="btn btn-outline-light px-3" href="/login">
+                                <i class="fas fa-sign-in-alt me-1"></i>تسجيل الدخول
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="btn btn-warning text-dark px-3" href="/register">
+                                <i class="fas fa-user-plus me-1"></i>تسجيل حساب جديد
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Messages -->
+    {% if messages %}
+    <div class="container mt-3">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Main Content -->
+    <div class="main-content" style="padding-top:0; margin-top:0;">
+        {% block content %}{% endblock %}
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-light py-4 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <h5><i class="fas fa-building me-2"></i>نظام حجز القاعات</h5>
+                    <p class="text-muted">نظام متطور لحجز القاعات والمؤتمرات بسهولة وأمان</p>
+                </div>
+                <div class="col-md-4">
+                    <h5>روابط سريعة</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="{% url 'hall_booking:halls_list' %}" class="text-muted">القاعات المتاحة</a></li>
+                        <li><a href="{% url 'hall_booking:contact' %}" class="text-muted">تواصل معنا</a></li>
+                        <li><a href="{% url 'hall_booking:about' %}" class="text-muted">من نحن</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h5>معلومات التواصل</h5>
+                    <ul class="list-unstyled text-muted">
+                        <li><i class="fas fa-phone me-2"></i>+966 50 123 4567</li>
+                        <li><i class="fas fa-envelope me-2"></i>info@halls-booking.com</li>
+                        <li><i class="fas fa-map-marker-alt me-2"></i>الرياض، المملكة العربية السعودية</li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="my-3">
+            <div class="text-center">
+                <p class="mb-0 text-muted">&copy; 2024 نظام حجز القاعات. جميع الحقوق محفوظة.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="{% static 'js/main.js' %}"></script>
+    
+    <script>
+// تبديل الثيم وتخزينه
+function setTheme(theme) {
+    document.body.setAttribute('data-theme', theme);
+    localStorage.setItem('site-theme', theme);
+}
+// عند تحميل الصفحة، استرجع الثيم المختار
+(function() {
+    const savedTheme = localStorage.getItem('site-theme') || 'gourmet';
+    setTheme(savedTheme);
+})();
+// عند اختيار ثيم من القائمة
+window.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.theme-select').forEach(function(el) {
+        el.addEventListener('click', function(e) {
+            e.preventDefault();
+            setTheme(this.getAttribute('data-theme'));
+        });
+    });
+});
+</script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html> 

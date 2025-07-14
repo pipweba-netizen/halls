@@ -1,0 +1,344 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ hall.name }} - نظام حجز القاعات{% endblock %}
+
+{% block content %}
+<!-- Hall Details Section -->
+<section class="py-5">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'hall_booking:home' %}">الرئيسية</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'hall_booking:halls_list' %}">القاعات</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ hall.name }}</li>
+            </ol>
+        </nav>
+
+        <div class="row">
+            <!-- Hall Image and Info -->
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-sm mb-4">
+                    <!-- معرض صور القاعة -->
+                    <div class="hall-gallery mb-3">
+                        <div class="swiper hallSwiper">
+                            <div class="swiper-wrapper">
+                                {% if hall.image %}
+                                <div class="swiper-slide">
+                                    <a href="{{ hall.image.url }}" data-fslightbox="hall-gallery">
+                                        <img src="{{ hall.image.url }}" class="w-100 rounded" style="height:400px;object-fit:cover;" alt="{{ hall.name }}">
+                                    </a>
+                                </div>
+                                {% endif %}
+                                {% for img in hall.images.all %}
+                                <div class="swiper-slide">
+                                    <a href="{{ img.image.url }}" data-fslightbox="hall-gallery">
+                                        <img src="{{ img.image.url }}" class="w-100 rounded" style="height:400px;object-fit:cover;" alt="صورة إضافية لـ {{ hall.name }}">
+                                    </a>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            <!-- أزرار التنقل -->
+                            <div class="swiper-button-next"></div>
+                            <div class="swiper-button-prev"></div>
+                            <div class="swiper-pagination"></div>
+                        </div>
+                    </div>
+                    <!-- نهاية معرض الصور -->
+                    
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <h1 class="card-title h2">{{ hall.name }}</h1>
+                            <span class="badge bg-primary fs-6">{{ hall.category.name }}</span>
+                        </div>
+                        
+                        <p class="card-text lead">{{ hall.description }}</p>
+                        
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-center mb-2">
+                                    <i class="fas fa-users text-primary me-2"></i>
+                                    <span class="fw-bold">السعة:</span>
+                                    <span class="ms-2">{{ hall.capacity }} شخص</span>
+                                </div>
+                                <div class="d-flex align-items-center mb-2">
+                                    <i class="fas fa-clock text-primary me-2"></i>
+                                    <span class="fw-bold">السعر:</span>
+                                    <span class="ms-2 text-success fw-bold">{{ hall.price_per_hour }} ريال/ساعة</span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-center mb-2">
+                                    <i class="fas fa-calendar-check text-primary me-2"></i>
+                                    <span class="fw-bold">الحالة:</span>
+                                    <span class="ms-2 badge hall-{{ hall.status }}">{{ hall.get_status_display }}</span>
+                                </div>
+                                <div class="d-flex align-items-center mb-2">
+                                    <i class="fas fa-map-marker-alt text-primary me-2"></i>
+                                    <span class="fw-bold">الموقع:</span>
+                                    <span class="ms-2">الطابق الأول</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {% if hall.features %}
+                        <div class="mb-4">
+                            <h5 class="mb-3">المميزات</h5>
+                            <div class="row">
+                                {% for feature in hall.features %}
+                                <div class="col-md-6 mb-2">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-check-circle text-success me-2"></i>
+                                        <span>{{ feature }}</span>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <div class="d-flex gap-3">
+                            <a href="{% url 'hall_booking:booking_form' hall.id %}" class="btn btn-primary btn-lg">
+                                <i class="fas fa-calendar-check me-2"></i>احجز الآن
+                            </a>
+                            <button class="btn btn-outline-primary btn-lg" onclick="checkAvailability()">
+                                <i class="fas fa-clock me-2"></i>تحقق من التوفر
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Booking Form Sidebar -->
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0"><i class="fas fa-calendar-alt me-2"></i>احجز هذه القاعة</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="availability-form" class="mb-4">
+                            <input type="hidden" name="hall_id" value="{{ hall.id }}">
+                            
+                            <div class="mb-3">
+                                <label for="start_datetime" class="form-label">تاريخ ووقت البداية</label>
+                                <input type="datetime-local" class="form-control" id="start_datetime" name="start_datetime" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="end_datetime" class="form-label">تاريخ ووقت النهاية</label>
+                                <input type="datetime-local" class="form-control" id="end_datetime" name="end_datetime" required>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="fas fa-search me-2"></i>تحقق من التوفر
+                            </button>
+                        </form>
+
+                        <hr>
+
+                        <div class="text-center">
+                            <h6 class="text-muted mb-3">معلومات سريعة</h6>
+                            <div class="row text-center">
+                                <div class="col-6 mb-3">
+                                    <div class="bg-light rounded p-3">
+                                        <i class="fas fa-users text-primary fa-2x mb-2"></i>
+                                        <div class="fw-bold">{{ hall.capacity }}</div>
+                                        <small class="text-muted">شخص</small>
+                                    </div>
+                                </div>
+                                <div class="col-6 mb-3">
+                                    <div class="bg-light rounded p-3">
+                                        <i class="fas fa-money-bill text-success fa-2x mb-2"></i>
+                                        <div class="fw-bold">{{ hall.price_per_hour }}</div>
+                                        <small class="text-muted">ريال/ساعة</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-4">
+                            <h6 class="text-muted mb-3">سياسة الحجز</h6>
+                            <ul class="list-unstyled">
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success me-2"></i>
+                                    الحد الأدنى للحجز: ساعة واحدة
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success me-2"></i>
+                                    الدفع مقدم أو عند الوصول
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success me-2"></i>
+                                    إمكانية الإلغاء قبل 24 ساعة
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success me-2"></i>
+                                    خدمة عملاء 24/7
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Availability Calendar -->
+        <div class="row mt-5">
+            <div class="col-12">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0"><i class="fas fa-calendar me-2"></i>التوفر في الأيام القادمة</h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="post" class="mb-3">
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label for="date" class="form-label">اختر تاريخ</label>
+                                    <input type="date" class="form-control" id="date" name="date" 
+                                           min="{{ today|date:'Y-m-d' }}" value="{{ selected_date|date:'Y-m-d' }}">
+                                </div>
+                                <div class="col-md-4 d-flex align-items-end">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-search me-2"></i>عرض التوفر
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+
+                        {% if selected_date and bookings %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>الوقت</th>
+                                        <th>الحدث</th>
+                                        <th>الحالة</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for booking in bookings %}
+                                    <tr>
+                                        <td>{{ booking.start_datetime|time:"H:i" }} - {{ booking.end_datetime|time:"H:i" }}</td>
+                                        <td>{{ booking.event_title }}</td>
+                                        <td>
+                                            <span class="badge status-{{ booking.status }}">
+                                                {{ booking.get_status_display }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% elif selected_date %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-check-circle text-success fa-3x mb-3"></i>
+                            <h5 class="text-success">القاعة متاحة في هذا التاريخ!</h5>
+                            <p class="text-muted">لا توجد حجوزات في {{ selected_date|date:"Y/m/d" }}</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Similar Halls -->
+        <div class="row mt-5">
+            <div class="col-12">
+                <h3 class="mb-4">قاعات مشابهة</h3>
+                <div class="row">
+                    {% for similar_hall in hall.category.hall_set.all|slice:":3" %}
+                    {% if similar_hall.id != hall.id %}
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100 border-0 shadow-sm hover-lift">
+                            {% if similar_hall.image %}
+                            <img src="{{ similar_hall.image.url }}" class="card-img-top" alt="{{ similar_hall.name }}" style="height: 200px; object-fit: cover;">
+                            {% else %}
+                            <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                                <i class="fas fa-building fa-3x text-muted"></i>
+                            </div>
+                            {% endif %}
+                            <div class="card-body">
+                                <h5 class="card-title">{{ similar_hall.name }}</h5>
+                                <p class="card-text text-muted">{{ similar_hall.description|truncatewords:15 }}</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="text-success fw-bold">{{ similar_hall.price_per_hour }} ريال/ساعة</span>
+                                    <span class="badge bg-primary">{{ similar_hall.capacity }} شخص</span>
+                                </div>
+                            </div>
+                            <div class="card-footer bg-transparent border-0">
+                                <a href="{% url 'hall_booking:hall_detail' similar_hall.id %}" class="btn btn-outline-primary w-100">
+                                    <i class="fas fa-eye me-2"></i>عرض التفاصيل
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Swiper.js -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+<!-- fslightbox.js -->
+<script src="https://cdn.jsdelivr.net/npm/fslightbox/index.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    new Swiper('.hallSwiper', {
+        loop: true,
+        spaceBetween: 20,
+        slidesPerView: 1,
+        navigation: {
+            nextEl: '.swiper-button-next',
+            prevEl: '.swiper-button-prev',
+        },
+        pagination: {
+            el: '.swiper-pagination',
+            clickable: true,
+        },
+        effect: 'slide',
+        speed: 600,
+    });
+});
+</script>
+{% endblock %} 
+
+{% block extra_css %}
+{{ block.super }}
+<style>
+.hall-gallery .swiper {
+    border-radius: 18px;
+    box-shadow: 0 8px 32px rgba(128,0,0,0.10), 0 2px 8px #bfa76a33;
+    background: #fff;
+    margin-bottom: 1.5rem;
+}
+.hall-gallery .swiper-slide img {
+    border-radius: 18px;
+    box-shadow: 0 2px 12px #bfa76a22;
+    transition: transform 0.2s;
+}
+.hall-gallery .swiper-slide img:hover {
+    transform: scale(1.03);
+    box-shadow: 0 8px 32px #bfa76a33;
+}
+.hall-gallery .swiper-button-next,
+.hall-gallery .swiper-button-prev {
+    color: #bfa76a;
+    filter: drop-shadow(0 2px 8px #80000033);
+}
+.hall-gallery .swiper-pagination-bullet {
+    background: #bfa76a;
+    opacity: 0.8;
+}
+.hall-gallery .swiper-pagination-bullet-active {
+    background: #800000;
+}
+</style>
+{% endblock %} 

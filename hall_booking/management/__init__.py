@@ -1,0 +1,1 @@
+# Management package for hall_booking app 
