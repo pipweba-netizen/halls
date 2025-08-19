@@ -3,6 +3,8 @@ from django.core.validators import MinValueValidator
 from datetime import datetime, timedelta
 from .models import Booking, Contact, Hall
 from django.utils import timezone
+# Define a custom validator for the start and end datetime fields
+# This validator checks that the start datetime is before the end datetime
 
 class BookingForm(forms.ModelForm):
     class Meta:
