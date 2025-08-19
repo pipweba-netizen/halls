@@ -17,6 +17,7 @@ pip-wheel-metadata/
 # Installer logs
 pip-log.txt
 pip-delete-this-directory.txt
+# Unit test / coverage
 
 # Unit test / coverage reports
 htmlcov/
